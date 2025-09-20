@@ -1,0 +1,547 @@
+//Nomes dos integrantes: Lucas Calvalcante, Lucas Fernandes Nunes, Herick Betin Tiburski, Davi Lorenzo Martins Duarte.
+//Orientador: Rafael Martins Balotin.
+
+
+#include <iostream>
+using namespace std;
+
+//FunÃ§Ãµes declaradas para poder mostra
+void menu(int cartela1[5][5], int cartela2[5][5], int cartela3[5][5], int cartela4[5][5], int cartela5[5][5], int sorteios[], string nome1, string nome2, string nome3, string nome4, string nome5, int ultimonumero);
+
+void jogo(int cartela1[5][5], int cartela2[5][5], int cartela3[5][5], int cartela4[5][5], int cartela5[5][5], int sorteios[], string nome1, string nome2, string nome3, string nome4, string nome5, int ultimonumero);
+
+//Mostra as informaÃ§Ãµes do trabalho e seus integrantes
+void sobre();
+
+//Pede ao usuario para preencher os nomes dos jogadores
+void escolherNome(string &nome, string &nome1, string &nome2, string &nome3, string &nome4);
+
+void preencherVetor(int vet[5], int inicio, int fim);
+
+void geradorMatriz(int cartela1[5][5], int cartela2[5][5], int cartela3[5][5], int cartela4[5][5], int cartela5[5][5], int vet[5], int vet1[5], int vet2[5],int vet3[5], int vet4[5]);
+
+void criadorMatriz(int matriz[5][5], int vet[5], int vet1[5], int vet2[5], int vet3[5], int vet4[5]);
+
+void verificadorMatriz(int matriz1[5][5], int matriz2[5][5]);
+
+void exibirCartela(int cartela[5][5], int sorteios[], string nome);
+
+void preencherZero(int sorteios[]);
+
+void sortearNumero(int sorteios[], int &ultimonumero);
+
+bool verificador(int sorteios[], int valor);
+
+void numerosSorteados(int sorteios[], int ultimonumero);
+
+bool verificarWin(int matriz[5][5], int sorteios[]);
+
+void exibirCrtGanhadora(int matriz[5][5], int sorteios[75]);
+
+void telaVitoria(string vencedor, int matriz[5][5], int sorteios[75]);
+
+int main() 
+{
+    // nomes
+    string nome1, nome2, nome3, nome4, nome5;
+    
+    srand(time(NULL));
+	int cartela1[5][5];
+	int cartela2[5][5];
+    int cartela3[5][5];
+	int cartela4[5][5];
+	int cartela5[5][5];
+	
+    int vet[5];
+    int vet1[5];
+    int vet2[5];
+    int vet3[5];
+    int vet4[5];
+    
+    
+    // ultimosorteio - ultimo numero sorteado
+    int ultimonumero = 0;
+    
+    int sorteios[75];
+    preencherZero(sorteios); // evitar lixo de memÃ³ria
+    geradorMatriz(cartela1, cartela2, cartela3, cartela4, cartela5, vet, vet1, vet2, vet3, vet4); // gerar as cartelas
+    menu(cartela1, cartela2, cartela3, cartela4, cartela5, sorteios, nome1, nome2, nome3, nome4, nome5, ultimonumero); // exibir jogo
+}
+
+// FunÃ§Ãµes //
+
+// Preenche e verifica repetiÃ§Ãµes dos vetores/linhas da matriz
+void preencherVetor(int vet[5], int inicio, int fim) {
+    int i = 0;
+    while (i < 5) {
+        int num = rand() % (fim - inicio + 1) + inicio;
+        int rep = 0; //verifica se ta repetido
+        for (int j = 0; j < i; j++) {
+            if (vet[j] == num) {
+                rep = 1;
+                break;
+            }
+        }
+
+        if (rep == 0) {
+            vet[i] = num;
+            i++;
+        }
+    }
+    
+    //Colocar os numeros do vetor em ordem crescente
+    int aux1 = 0;
+    int aux2 = 0;
+    bool rept = true;
+    while (rept){
+        rept = false;
+        for (int t = 0; t < 5; t++){
+            //OrganizaÃ§Ã£o crescente dos numeros sorteados
+            if (vet[t] > vet[t+1] && vet[t] != 0 && vet[t+1] != 0){
+                aux1 = vet[t];
+                aux2 = vet[t+1];
+                vet[t] = aux2;
+                vet[t+1] = aux1;
+                rept = true;
+            }
+        }
+    }
+}
+
+
+void criadorMatriz(int matriz[5][5], int vet[5], int vet1[5], int vet2[5], int vet3[5], int vet4[5]){
+    
+    preencherVetor(vet, 1, 15); // NÃºmeros Ãºnicos de 1 a 15
+    preencherVetor(vet1, 16, 30);
+    preencherVetor(vet2, 31, 45); 
+    preencherVetor(vet3, 46, 60);
+    preencherVetor(vet4, 61, 75);
+    
+    //Preenche os vetores nas matrizes
+    for(int i = 0; i < 5; i++){
+        matriz[0][i] = vet[i];
+        matriz[1][i] = vet1[i];
+        matriz[2][i] = vet2[i];
+        matriz[3][i] = vet3[i];
+        matriz[4][i] = vet4[i];
+    }
+}
+
+//FunÃ§Ã£o para verificar se duas matrizes sÃ£o repetidas
+void verificadorMatriz(int matriz1[5][5], int matriz2[5][5]){
+    
+    int v = 0; 
+    for(int linha = 0; linha < 5; linha++){
+        for(int coluna = 0; coluna < 5; coluna++){
+            if (matriz1[linha][coluna] == matriz2[linha][coluna]){
+                v++; 
+            }
+        }
+    }
+    
+    if (v == 25){
+        int vet[5];
+        int vet1[5];
+        int vet2[5];
+        int vet3[5];
+        int vet4[5];
+        criadorMatriz(matriz2, vet, vet1, vet2, vet3, vet4);
+    }
+}   
+
+//FunÃ§Ã£o para criar as matrizes e verificar elas
+void geradorMatriz(int cartela1[5][5], int cartela2[5][5], int cartela3[5][5], int cartela4[5][5], int cartela5[5][5], int vet[5], int vet1[5], int vet2[5],int vet3[5], int vet4[5]){
+    // Cria matriz
+    criadorMatriz(cartela1, vet, vet1, vet2, vet3, vet4);
+    criadorMatriz(cartela2, vet, vet1, vet2, vet3, vet4);
+    criadorMatriz(cartela3, vet, vet1, vet2, vet3, vet4);
+    criadorMatriz(cartela4, vet, vet1, vet2, vet3, vet4);
+    criadorMatriz(cartela5, vet, vet1, vet2, vet3, vet4);
+
+    //Verifica matriz 5 vezes para nÃ£o ter chance de erro
+    for(int i = 0; i<5;i++){
+        verificadorMatriz(cartela1, cartela2);
+        verificadorMatriz(cartela1, cartela3);
+        verificadorMatriz(cartela1, cartela4);
+        verificadorMatriz(cartela1, cartela5);
+        verificadorMatriz(cartela2, cartela3);
+        verificadorMatriz(cartela2, cartela4);
+        verificadorMatriz(cartela2, cartela5);
+        verificadorMatriz(cartela3, cartela4);
+        verificadorMatriz(cartela3, cartela5);
+        verificadorMatriz(cartela4, cartela5);
+    }
+    
+}
+//Seleciona nomes dos jogadores
+void escolherNome(string &nome, string &nome1, string &nome2, string &nome3, string &nome4){
+    cout << "=============================== BINGO ======================================" << endl;
+    cout << endl << "=====================Digite o nome dos Jogadores============================" << endl;
+    cout << "Jogador 1: ";
+    cin >> nome;
+    cout << "Jogador 2: ";
+    cin >> nome1;
+    cout << "Jogador 3: ";
+    cin >> nome2;
+    cout << "Jogador 4: ";
+    cin >> nome3;
+    cout << "Jogador 5: ";
+    cin >> nome4;
+    int x;
+    cin.ignore();
+    system("clear");
+    
+}
+
+//Exibe numeros sorteados e coloca em ordem crescente
+void numerosSorteados(int sorteios[], int ultimonumero){
+    int aux1 = 0;
+    int aux2 = 0;
+    bool rept = true;
+    cout << "Numeros sorteados: ";
+    while (rept){
+        rept = false;
+        for (int t = 1; t <= 75; t++){
+            //OrganizaÃ§Ã£o crescente dos numeros sorteados
+            if (sorteios[t] > sorteios[t+1] && sorteios[t] != 0 && sorteios[t+1] != 0){
+                aux1 = sorteios[t];
+                aux2 = sorteios[t+1];
+                sorteios[t] = aux2;
+                sorteios[t+1] = aux1;
+                rept = true;
+            }
+        }
+    }
+    
+    //Exibir numeros sorteados 
+    for (int i = 1; i <= 75; i++){
+        if (sorteios[i] == 0){
+            //Quando for 0 ele nÃ£o exibe para o Usuario
+        }
+        else{
+            if (i == 20){
+                cout << endl << " ";    // dar enter e deixar bonito
+            }
+            else if (i == 45){
+                cout << endl << " ";   
+            }
+            else if (i == 70){
+                cout << endl << " ";   
+            } 
+            
+            if (sorteios[i] < 10){ 
+                // mostrar ultimo numero
+                if (sorteios[i] == ultimonumero){
+                  cout << "\033[4;41m0" << sorteios[i] << "\033[0m|";   
+                }
+                else{
+                    cout << "0" << sorteios[i] << "\033[0m|";
+                }
+            
+            }
+            else{
+                if (sorteios[i] == ultimonumero){
+                    cout << "\033[4;41m" << sorteios[i] << "\033[0m|";   
+                }
+                else{
+                    cout << sorteios[i] << "|";
+                }
+            }
+        }
+    }
+    
+}
+//Verificar cada numero do sorteio e mandar um sinal para ficar verde nos numeros sorteados.
+bool verificador(int sorteios[], int valor){
+    for (int i = 1; i <= 75; i++){
+      if (sorteios[i] == valor){
+        return true;
+      }
+    }
+    return false;
+}
+
+//FunÃ§Ã£o que exibe uma cartela de um jogador no Bingo
+void exibirCartela(int cartela[5][5], int sorteios[], string nome){
+    int valor;
+    cout << "\033[4m"<< nome << "              " << endl;  //Exibe o nome do jogador sublinhado
+
+    for (int i = 0; i < 5; i++){   
+        for (int j = 0; j < 5; j++){
+            
+            valor = cartela[i][j];  //Coleta o valor atual da matriz na posiÃ§Ã£o i, j.
+            
+                if (cartela[i][j] < 10){
+                    if (verificador(sorteios, valor)){  //Se o numero jÃ¡ foi sorteado
+                        cout << "\033[4;92m|0" << cartela[i][j] << "|\033[0m"; //Mostra em verde o numero e soblinha
+                    }
+                    else{
+                        cout << "\033[4m|0" << cartela[i][j] << "|\033[0m";  //Se nÃ£o saiu, mostra sÃ³ sublinhado normal
+                    }
+                        
+                }
+                else{ //Se o nÃºmero tiver 2 dÃ­gitos.
+                    if (verificador(sorteios, valor)){
+                        cout << "\033[4;92m|" << cartela[i][j] << "|\033[0m"; //Mostra em verde e sublinhado
+                    }
+                    else{ //Mostra sÃ³ o numero sublinhado normal
+                       cout << "\033[4m|" << cartela[i][j] << "|\033[0m";  
+                    }
+                }
+        }
+        cout << endl;
+    }
+}
+
+//Gerador de numeros aleatorios
+void sortearNumero(int sorteios[], int &ultimonumero){
+    bool repetir = true;
+    bool repet = true;
+    
+    while (repet){
+        ultimonumero = rand() % (75 - 1 + 1) + 1;
+        repet = false;
+        for (int i = 1; i <= 75; i++){
+            if (sorteios[i] == ultimonumero){
+                repet = true;
+                break;
+            }
+        }
+    }
+    
+    while (repetir){
+        for (int i = 1; i <= 75; i++){
+            if (sorteios[i] == 0){
+               sorteios[i] = ultimonumero;
+               repetir = false;
+               break;
+            }
+        }
+    }
+}
+//Funcionamento geral do jogo, mostrando nome dos 5 jogadores e as catrtelas geradas.
+void jogo(int cartela1[5][5], int cartela2[5][5], int cartela3[5][5], int cartela4[5][5], int cartela5[5][5], int sorteios[], string nome1, string nome2, string nome3, string nome4, string nome5, int ultimonumero){
+    int clicks = 0;
+    escolherNome(nome1, nome2, nome3, nome4, nome5);
+    while(true){
+        cout << "=============================== BINGO ======================================" << endl;
+        numerosSorteados(sorteios, ultimonumero);
+        cout << endl << "============================================================================" << endl;
+        // Cartela 1
+        exibirCartela(cartela1, sorteios, nome1);
+        exibirCartela(cartela2, sorteios, nome2);
+        exibirCartela(cartela3, sorteios, nome3);
+        exibirCartela(cartela4, sorteios, nome4);
+        exibirCartela(cartela5, sorteios, nome5);
+        cout << "\033[?25l"; //codigo para desativar o cursor no console
+        
+        // Verificador de Ganho
+        if (verificarWin(cartela1, sorteios)){
+            cout<<endl;
+            cout<<"Oba, temos uma vitÃ³ria!. Clique enter para ver.";
+            cin.ignore();
+            telaVitoria(nome1, cartela1, sorteios);
+        }
+        if (verificarWin(cartela2, sorteios)){
+            cout<<endl;
+            cout<<"Oba, temos uma vitÃ³ria!. Clique enter para ver.";
+            cin.ignore();
+            telaVitoria(nome2, cartela2, sorteios);
+        }        
+        if (verificarWin(cartela3, sorteios)){
+            cout<<endl;
+            cout<<"Oba, temos uma vitÃ³ria!. Clique enter para ver.";
+            cin.ignore();
+            telaVitoria(nome3, cartela3, sorteios);
+        }
+        if (verificarWin(cartela4, sorteios)){
+            cout<<endl;
+            cout<<"Oba, temos uma vitÃ³ria!. Clique enter para ver.";
+            cin.ignore();
+            telaVitoria(nome4, cartela4, sorteios);
+        }
+        if (verificarWin(cartela5, sorteios)){
+            cout<<endl;
+            cout<<"Oba, temos uma vitÃ³ria!. Clique enter para ver.";
+            cin.ignore();
+            telaVitoria(nome5, cartela5, sorteios);
+        }
+        
+        cin.ignore();
+        
+        if (clicks < 75){
+            clicks++;
+            sortearNumero(sorteios, ultimonumero);
+            system("clear"); // limpa/atualiza
+        } else {
+            system("clear"); // limpa/atualiza
+            /// Colocar uma pagina pra game over nao sei pois no caso todos os numeros foram sorteados chances impossiveis de chegar aq
+        }
+        
+    }
+
+    
+}
+//InformaÃ§Ãµes apÃ³s selecionar a opÃ§Ã£o "Sobre" no menu.
+void sobre() {
+    string x;
+    cout << "---------------------------------------" << endl; 
+    cout << " Membros da equipe de desenvolvimento: " << endl;
+    cout << "---------------------------------------" << endl;
+    cout << " Integrantes do grupo:" << endl << endl;
+    cout << " Davi Lorenzo Martins Duarte" << endl;
+    cout << " Lucas Calvalcante Leandro" << endl;
+    cout << " Lucas Fernandes Nunes" << endl;
+    cout << " Herick Betin Tiburski"<< endl << endl;
+    cout << " Data: 11/09/2025" << endl << endl;
+    cout << " Professor: Rafael Martins Balotin" << endl;
+    cout << "---------------------------------------" << endl;
+    cout << " Digite qualquer tecla para voltar ao menu" << endl;
+    cin >> x;
+    
+}
+void menu(int cartela1[5][5], int cartela2[5][5], int cartela3[5][5], int cartela4[5][5], int cartela5[5][5], int sorteios[], string nome1, string nome2, string nome3, string nome4, string nome5, int ultimonumero){
+    int opcoes;
+        string temp;
+        
+        while(opcoes != 3){
+        system("clear");
+            cout << "===== BINGO =====\n";
+            cout << "1. Jogar\n";
+            cout << "2. Sobre\n";
+            cout << "3. Sair\n";
+            cout << "Escolha uma opcao: ";
+            cin>> opcoes;
+           
+        system("clear");
+        
+        
+            if(opcoes == 1){    //OpÃ§Ã£o para jogar
+                
+                jogo(cartela1, cartela2, cartela3, cartela4, cartela5, sorteios, nome1, nome2, nome3, nome4, nome5, ultimonumero);
+                
+            } else if(opcoes == 2){ //OpÃ§Ã£o para acesso de infomaÃ§Ãµes do trabalho
+                sobre();
+                
+            } else if(opcoes == 3){  //OpÃ§Ã£o de encerramento do cÃ³digo.
+                cout<<"AtÃ© mais :) ";
+                
+            }
+            else{
+                cout<<"OpÃ§Ã£o nÃ£o encontrada\n\n";  //Caso digitar opÃ§Ã£o errada ele nÃ£o irÃ¡ executar
+                    
+                cout<<"Clique qualquer tecla para voltar ao menu principal.\n";
+                cin>>temp;
+            }
+        }
+}
+void preencherZero(int sorteios[]){
+    for (int i = 1; i <= 75; i++){
+        sorteios[i] = 0;
+    }
+}
+bool verificarWin(int matriz[5][5], int sorteios[]) {
+    
+    int acertos = 0;
+    
+    for (int linha = 0; linha < 5; linha++) {
+        for (int coluna = 0; coluna < 5; coluna++) {
+            int numero = matriz[linha][coluna];
+
+            // Verifica se o nÃºmero estÃ¡ nos sorteios
+            for (int i = 0; i < 75; i++) {
+                if (sorteios[i] == numero) {
+                    acertos++;
+                    break;
+                }
+            }
+        }
+
+        if (acertos == 25) {
+            // Linha completa encontrada
+            return true;
+        }
+    }
+
+    return false; // Nenhuma linha completa
+
+}
+//Mostra uma tela de vitoria para o jogador vencedor.
+void telaVitoria(string vencedor, int matriz[5][5], int sorteios[75]) {
+    system("clear"); 
+
+    cout << "     ============================================\n";
+    cout << "        â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆ    â–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    \n";
+    cout << "        â–ˆ    â–ˆ     â–ˆ     â–ˆâ–ˆ   â–ˆ  â–ˆ     â–ˆ  â–ˆ     â–ˆ   \n";
+    cout << "        â–ˆ    â–ˆ     â–ˆ     â–ˆ â–ˆ  â–ˆ  â–ˆ        â–ˆ     â–ˆ   \n";
+    cout << "        â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ      â–ˆ     â–ˆ   â–ˆâ–ˆ  â–ˆ   â–ˆâ–ˆâ–ˆ  â–ˆ     â–ˆ   \n";
+    cout << "        â–ˆ    â–ˆ     â–ˆ     â–ˆ    â–ˆ  â–ˆ     â–ˆ  â–ˆ     â–ˆ   \n";
+    cout << "        â–ˆ    â–ˆ     â–ˆ     â–ˆ    â–ˆ  â–ˆ     â–ˆ  â–ˆ     â–ˆ     \n";
+    cout << "        â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆ    â–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ \n";
+    cout << "     ============================================\n";
+
+    cout << "\n===============================================================\n";
+    cout << " PARABÃ‰NS " << vencedor << "! VOCÃŠ GANHOU O BINGO ! \n";
+    cout << "===============================================================\n";
+    exibirCrtGanhadora(matriz, sorteios);
+    string x;
+    cin >> x;
+}
+
+//FunÃ§Ã£o Final para exibir a cartela ganhadora
+void exibirCrtGanhadora(int matriz[5][5], int sorteios[75]){
+    cout << "---- Numeros Sorteados ----" << endl;
+    // Exibir nÃºmeros sorteados em colunas, destacando os que aparecem na matriz
+    for (int k = 1; k <= 75; k++) {
+        if (sorteios[k] == 0) {
+            // NÃ£o exibe zeros
+            continue;
+        }
+    
+        // Quebra de linha para organizaÃ§Ã£o visual
+        if (k == 20 || k == 45 || k == 70) {
+            cout << endl << " ";
+        }
+    
+        // Verifica se o nÃºmero sorteado estÃ¡ presente na matriz
+        bool estaNaCartela = false;
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (sorteios[k] == matriz[i][j]) {
+                    estaNaCartela = true;
+                    break;
+                }
+            }
+            if (estaNaCartela) break;
+        }
+    
+        // Destaque especial se estiver na matriz/cartela
+        if (sorteios[k] < 10) {
+            if (estaNaCartela) {
+                cout << "\033[32m" << sorteios[k] << "\033[0m|";
+            } else {
+                cout << "0" << sorteios[k] << "|";
+            }
+        } else {
+            if (estaNaCartela) {
+                cout << "\033[32m" << sorteios[k] << "\033[0m|";
+            } else {
+                cout << sorteios[k] << "|";
+            }
+        }
+    }
+    cout << endl;
+    
+    // Exibe a matriz/cartela
+    cout << "------ Sua Cartela ----" << endl;
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (matriz[i][j] < 10) {
+                cout << "\033[4m|0" << matriz[i][j] << "|";
+            } else {
+                cout << "\033[4m|" << matriz[i][j] << "|";
+            }
+        }
+        cout << endl;
+    }
+}
